@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Movie Recommender</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #121212;
+            color: white;
+            text-align: center;
+        }
+
+        input {
+            padding: 10px;
+            width: 250px;
+        }
+
+        button {
+            padding: 10px;
+            background: red;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .movies {
+            margin-top: 20px;
+        }
+
+        .card {
+            background: #1e1e1e;
+            padding: 10px;
+            margin: 10px;
+            display: inline-block;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>🎬 Movie Recommender</h1>
+
+<input type="text" id="movie" placeholder="Enter movie name">
+<button onclick="getRecommendation()">Recommend</button>
+
+<div class="movies" id="result"></div>
+
+<script>
+function getRecommendation() {
+    let movie = document.getElementById("movie").value;
+
+    fetch("http://127.0.0.1:5000/recommend", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ movie: movie })
+    })
+    .then(res => res.json())
+    .then(data => {
+        let resultDiv = document.getElementById("result");
+        resultDiv.innerHTML = "";
+
+        if (data.length === 0) {
+            resultDiv.innerHTML = "<p>No recommendations found</p>";
+            return;
+        }
+
+        data.forEach(movie => {
+            let card = document.createElement("div");
+            card.className = "card";
+            card.innerText = movie;
+            resultDiv.appendChild(card);
+        });
+    })
+    .catch(err => {
+        console.error(err);
+        alert("Error connecting to backend");
+    });
+}
+</script>
+
+</body>
+</html>
